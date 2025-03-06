@@ -1,13 +1,44 @@
+import React, { useState } from "react";
 import styled from "styled-components";
-const Header = () => {
+
+const Header = ({ isDarkMode, toggleTheme, addTodo }) => {
+  const [inputValue, setInputValue] = useState("");
+  const [isNewTaskCompleted, setIsNewTaskCompleted] = useState(false); 
+
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter" && inputValue.trim() !== "") {
+      addTodo(inputValue, isNewTaskCompleted);  
+      setInputValue("");  
+      setIsNewTaskCompleted(false);  
+    }
+  };
+
+  const toggleNewTaskCompletion = () => {
+    setIsNewTaskCompleted(!isNewTaskCompleted);
+  };
+
   return (
     <>
       <ImgDiv>
         <ToDo>T O D O</ToDo>
-        <Moon src="/moon.svg" />
+        <ThemeIcon
+          src={isDarkMode ? "/sun.svg" : "/moon.svg"}
+          alt="Toggle Theme"
+          onClick={toggleTheme}
+        />
       </ImgDiv>
-      <InputDiv>
-        <Input />
+      <InputDiv isDarkMode={isDarkMode}>
+        <Input
+          isDarkMode={isDarkMode}
+          placeholder="Create a new todo..."
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          onKeyDown={handleKeyPress}
+          style={{
+            backgroundImage: isNewTaskCompleted ? "url('/ticked.svg')" : "url('/notTicked.svg')",
+          }}
+          onClick={toggleNewTaskCompletion} 
+        />
       </InputDiv>
     </>
   );
@@ -16,41 +47,63 @@ const Header = () => {
 const ImgDiv = styled.div`
   width: 325px;
   height: 20px;
-  margin-top: 20px;
-  background-color: #8d6666;
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  position: relative;
+  top: 5%;
+  @media(min-width:1440px){
+    width:540px;
+    position: relative;
+  }
 `;
+
 const ToDo = styled.h1`
-  color: #ffffff;
-  font-size: 20px;
+  color: white;
+  font-size: 34px;
+  @media(min-width:1440px){
+    font-size: 40px;
+  }
 `;
-const Moon = styled.img`
-  width: 20px;
+
+const ThemeIcon = styled.img`
+  width: 25px;
+  height: 30px;
+  cursor: pointer;
 `;
+
 const InputDiv = styled.div`
   width: 327px;
   height: 48px;
-  top: 108px;
-  left: 24px;
   border-radius: 5px;
-  background-color: #ffffff;
-  margin-top: 30px;
+  background-color: ${({ isDarkMode }) => (isDarkMode ? "#000000a6" : "#ffffff")};
+  margin-top: 67px;
+  margin-bottom: 20px;
+  @media(min-width:1440px){
+    width: 540px;
+    height: 64px;
+  }
 `;
+
 const Input = styled.input`
-  width: 327px;
-  height: 48px;
-  top: 108px;
-  left: 24px;
-  border-radius: 5px;
+  width: 100%;
+  height: 100%;
+  padding-left: 56px;
   border: none;
-  ::placeholder {
-    color: red;
-    font-size: 20px;
+  border-radius: 5px;
+  background-repeat: no-repeat;
+  background-position: 27px center;
+  background-color: ${({ isDarkMode }) => (isDarkMode ? "#000000a6" : "#ffffff")};
+  color: ${({ isDarkMode }) => (isDarkMode ? "#ffffff" : "#000000")};
+
+  &::placeholder {
+    color: ${({ isDarkMode }) => (isDarkMode ? "#aaa" : "gray")};
   }
+
   &:focus {
-    border-color: #007bff;
-    background-color: #f0f8ff;
+    outline: none;
   }
 `;
+
 export default Header;
